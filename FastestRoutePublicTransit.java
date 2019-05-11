@@ -35,44 +35,43 @@ public class FastestRoutePublicTransit {
 	 */
 	public int myShortestTravelTime(int S, int T, int startTime, int[][] lengths, int[][] first, int[][] freq) {
 
-		int time[] = new int[lengths[0].length];
-		int addTime;
+		int totaltime[] = new int[lengths[0].length];
 		Boolean sptSet[] = new Boolean[lengths[0].length];
-		
+		int waitTime;
 		for (int i = 0; i < lengths[0].length; i++) {
-			time[i] = Integer.MAX_VALUE;
+			totaltime[i] = Integer.MAX_VALUE;
 			sptSet[i] = false;
 		}
 
-		time[S] = startTime;
+		totaltime[S] = startTime;
 
 		for (int count = 0; count < lengths[0].length - 1; count++) {
-			int u = findNextToProcess(time, sptSet);
+			int u = findNextToProcess(totaltime, sptSet);
 			sptSet[u] = true;
 
 			for (int v = 0; v < lengths[0].length; v++) {
-				if (time[u] > first[u][v]) {
+				if (totaltime[u] > first[u][v]) {
 					if (freq[u][v] == 0) {
-						addTime = time[u] + lengths[u][v];
+						waitTime = totaltime[u] + lengths[u][v];
 					} else {
-						addTime = ((time[u] - first[u][v]) % freq[u][v]);
-						if (addTime == 0)
-							addTime = time[u] + lengths[u][v];
+						waitTime = ((totaltime[u] - first[u][v]) % freq[u][v]);
+						if (waitTime == 0)
+							waitTime = totaltime[u] + lengths[u][v];
 						else
-							addTime = time[u] + lengths[u][v] + freq[u][v] - addTime;
+							waitTime = totaltime[u] + lengths[u][v] + freq[u][v] - waitTime;
 					}
 				}
 				else {
-					addTime = first[u][v] - time[u];
-					addTime = time[u] + lengths[u][v] + addTime;
+					waitTime = totaltime[u] + lengths[u][v] +first[u][v] - totaltime[u];
+					
 				}
-				if (!sptSet[v] && lengths[u][v] != 0 && time[u] != Integer.MAX_VALUE && addTime < time[v]) {
-					time[v] = addTime;
+				if (!sptSet[v] && lengths[u][v] != 0 && totaltime[u] != Integer.MAX_VALUE && waitTime < totaltime[v]) {
+					totaltime[v] = waitTime;
 				}
 			}
 		}
 
-		return time[T] - startTime;
+		return totaltime[T] - startTime;
 	}
 
   /**
