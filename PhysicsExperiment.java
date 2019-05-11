@@ -1,7 +1,7 @@
 /**
  * Physics Experiment
- * Author: Your Name and Carolyn Yao
- * Does this compile or finish running within 5 seconds? Y/N
+ * Author: Andy Arellano and Carolyn Yao
+ *Does this compile or finish running within 5 seconds? Y
  */
 
 /**
@@ -28,17 +28,39 @@ public class PhysicsExperiment {
    * @return scheduleTable: a table similar to the signUpTable where scheduleTable[X][Y] = 1 means
    *     student X is assigned to step Y in an optimal schedule
    */
-  public int[][] scheduleExperiments(
-    int numStudents,
-    int numSteps,
-    int[][] signUpTable
-  ) {
-    // Your scheduleTable is initialized as all 0's so far. Your code will put 1's
-    // in the table in the right places based on the return description
-    int[][] scheduleTable = new int[numStudents + 1][numSteps + 1];
+	public int[][] scheduleExperiments(
+			int numStudents,
+			int numSteps,
+			int[][] signUpTable
+			) {
+		// Your scheduleTable is initialized as all 0's so far. Your code will put 1's
+		// in the table in the right places based on the return description
+		// Your code goes here
 
-    // Your code goes here
+		int[][] scheduleTable = new int[numStudents + 1][numSteps + 1];
+		int currentStep=0;
+		while(currentStep <numSteps){
+			int bestStudent=0;
+			int maxConsecutiveSteps=0;
 
+			for(int studentNum=0;studentNum<numStudents+1;studentNum++){
+				int k=currentStep;
+				int currentConsecutiveSteps=0;
+			
+				while(k+1<numSteps+1&&signUpTable[studentNum][k+1]==1){
+					currentConsecutiveSteps++;
+					k++;
+				}
+				if(currentConsecutiveSteps>maxConsecutiveSteps){
+					maxConsecutiveSteps=currentConsecutiveSteps;
+					bestStudent=studentNum;
+				}
+			}
+			for(int m=0;m<maxConsecutiveSteps;m++){
+				scheduleTable[bestStudent][currentStep +1]=1;
+				currentStep++;
+			}
+		}
     return scheduleTable;
   }
 
