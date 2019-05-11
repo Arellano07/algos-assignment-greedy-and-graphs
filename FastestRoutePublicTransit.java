@@ -1,7 +1,7 @@
 /**
  * Public Transit
- * Author: Your Name and Carolyn Yao
- * Does this compile? Y/N
+ * Author: Andy Arellano and Carolyn Yao
+Does this compile or finish running within 5 seconds? Y
  */
 
 /**
@@ -12,30 +12,68 @@
  */
 public class FastestRoutePublicTransit {
 
-  /**
-   * The algorithm that could solve for shortest travel time from a station S
-   * to a station T given various tables of information about each edge (u,v)
-   *
-   * @param S the s th vertex/station in the transit map, start From
-   * @param T the t th vertex/station in the transit map, end at
-   * @param startTime the start time in terms of number of minutes from 5:30am
-   * @param lengths lengths[u][v] The time it takes for a train to get between two adjacent stations u and v
-   * @param first first[u][v] The time of the first train that stops at u on its way to v, int in minutes from 5:30am
-   * @param freq freq[u][v] How frequently is the train that stops at u on its way to v
-   * @return shortest travel time between S and T
-   */
-  public int myShortestTravelTime(
-    int S,
-    int T,
-    int startTime,
-    int[][] lengths,
-    int[][] first,
-    int[][] freq
-  ) {
-    // Your code along with comments here. Feel free to borrow code from any
-    // of the existing method. You can also make new helper methods.
-    return 0;
-  }
+  	/**
+	 * The algorithm that could solve for shortest travel time from a station S
+	 * to a station T given various tables of information about each edge (u,v)
+	 *
+	 * @param S
+	 *            the s th vertex/station in the transit map, start From
+	 * @param T
+	 *            the t th vertex/station in the transit map, end at
+	 * @param startTime
+	 *            the start time in terms of number of minutes from 5:30am
+	 * @param lengths
+	 *            lengths[u][v] The time it takes for a train to get between two
+	 *            adjacent stations u and v
+	 * @param first
+	 *            first[u][v] The time of the first train that stops at u on its
+	 *            way to v, int in minutes from 5:30am
+	 * @param freq
+	 *            freq[u][v] How frequently is the train that stops at u on its
+	 *            way to v
+	 * @return shortest travel time between S and T
+	 */
+	public int myShortestTravelTime(int S, int T, int startTime, int[][] lengths, int[][] first, int[][] freq) {
+
+		int time[] = new int[lengths[0].length];
+		int addTime;
+		Boolean sptSet[] = new Boolean[lengths[0].length];
+		
+		for (int i = 0; i < lengths[0].length; i++) {
+			time[i] = Integer.MAX_VALUE;
+			sptSet[i] = false;
+		}
+
+		time[S] = startTime;
+
+		for (int count = 0; count < lengths[0].length - 1; count++) {
+			int u = findNextToProcess(time, sptSet);
+			sptSet[u] = true;
+
+			for (int v = 0; v < lengths[0].length; v++) {
+				if (time[u] > first[u][v]) {
+					if (freq[u][v] == 0) {
+						addTime = time[u] + lengths[u][v];
+					} else {
+						addTime = ((time[u] - first[u][v]) % freq[u][v]);
+						if (addTime == 0)
+							addTime = time[u] + lengths[u][v];
+						else
+							addTime = time[u] + lengths[u][v] + freq[u][v] - addTime;
+					}
+				}
+				else {
+					addTime = first[u][v] - time[u];
+					addTime = time[u] + lengths[u][v] + addTime;
+				}
+				if (!sptSet[v] && lengths[u][v] != 0 && time[u] != Integer.MAX_VALUE && addTime < time[v]) {
+					time[v] = addTime;
+				}
+			}
+		}
+
+		return time[T] - startTime;
+	}
 
   /**
    * Finds the vertex with the minimum time from the source that has not been
@@ -125,5 +163,48 @@ public class FastestRoutePublicTransit {
     t.shortestTime(lengthTimeGraph, 0);
 
     // You can create a test case for your implemented method for extra credit below
+    int length[][] = new int[][] {
+  
+           { 0,  0,  4,  0,  0,  2,  0,  11, 0 },  
+           { 0,  0,  8,  0,  10, 0,  0,  0,  0 }, 
+           { 10,  4,  0,  7,  0,  4,  0,  0,  6 },  
+           { 0,  0,  7,  0,  10, 4,  0,  2,  0 },  
+           { 0,  13, 0,  14, 0,  0,  0,  0,  0 }, 
+           { 4,  0,  4,  4,  0,  0,  6,  0,  0 },  
+           { 0,  0,  0,  0,  0,  6,  0,  5,  2 },  
+           { 13, 0,  0,  5,  0,  0,  7,  0,  0 },  
+           { 0,  0,  6,  0,  0,  0,  2,  0,  0 } };
+
+   int first[][] = new int[][] {
+     
+           { 0,  0,  6,  0,  0,  5,  0,  11, 0 },  
+           { 0,  0,  2,  0,  20, 0,  0,  0,  0 },  
+           { 2,  8,  0,  7,  0,  4,  0,  0,  8 },  
+           { 0,  0,  7,  0,  10, 4,  0,  6,  0 },  
+           { 0,  13, 0,  20, 0,  0,  6,  0,  0 },  
+           { 8,  0,  4,  9,  0,  0,  8,  0,  0 }, 
+           { 0,  0,  0,  0,  2,  4,  0,  9,  6 },  
+           { 17, 0,  0,  4,  0,  0,  4, 0,  0 },  
+           { 0,  0,  4,  0,  0,  0,  9,  0,  0 } };
+
+   int freq[][] = new int[][] {
+
+           { 0,  0,  4,  0,  0,  4,  0,  5,  0 },  
+           { 0,  0,  4,  0,  8,  0,  0,  0,  0 },  
+           { 3,  6,  0,  7,  0,  4,  0,  0,  10 },  
+           { 0,  0,  7,  0,  10, 4,  0,  4,  0 }, 
+           { 0,  8,  0,  10, 0,  0,  0,  0,  0 },  
+           { 2,  0,  4,  4,  0,  0,  7,  0,  0 }, 
+           { 0,  2,  4,  0,  0,  7,  0,  8,  6 },  
+           { 5,  0,  4,  2,  0,  0,  7,  0,  0 },  
+           { 0,  0,  8,  0,  0,  0,  6,  0,  0 } };
+
+
+
+   int start = 1;
+   int goal = 8;
+
+   int shortestTime= t.myShortestTravelTime(start, goal, 5, length, first, freq);
+   System.out.println( "By taking the shortest route travel time between " + start + " and " + goal + " is: " + shortestTime) ;
   }
 }
